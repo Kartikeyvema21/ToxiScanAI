@@ -1,0 +1,402 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ToxiScan AI | Toxic Comment Detector</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <link rel="stylesheet" href="/static/style.css" />
+    <script src="/static/toxic.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Orbitron:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="icon"
+      type="image/x-icon"
+      href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>☣️</text></svg>"
+    />
+  </head>
+  <body>
+    <!-- Navigation -->
+    <nav class="navbar">
+      <div class="nav-container">
+        <div class="logo">
+          <i class="fas fa-radiation-alt"></i>
+          <span>ToxiScan<span class="logo-ai">AI</span></span>
+        </div>
+        <div class="nav-links">
+          <a href="#detector" class="nav-link active">Detector</a>
+          <a href="#analysis" class="nav-link">Analysis</a>
+          <a href="#examples" class="nav-link">Examples</a>
+          <a href="#about" class="nav-link">About</a>
+        </div>
+        <div class="theme-toggle">
+          <i class="fas fa-moon"></i>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+      <div class="hero-content">
+        <h1 class="hero-title">
+          <span class="hero-gradient">Detect Toxicity</span>
+          <br />
+          <span class="hero-subtitle">in Real-Time</span>
+        </h1>
+        <p class="hero-description">
+          Advanced AI-powered toxicity detection system that analyzes comments
+          and text for harmful content with high accuracy. Protect your
+          community with intelligent filtering.
+        </p>
+        <div class="hero-stats">
+          <div class="stat">
+            <div class="stat-value">95.2%</div>
+            <div class="stat-label">Accuracy</div>
+          </div>
+          <div class="stat">
+            <div class="stat-value">0.3s</div>
+            <div class="stat-label">Detection Time</div>
+          </div>
+          <div class="stat">
+            <div class="stat-value">10K+</div>
+            <div class="stat-label">Words Analyzed</div>
+          </div>
+        </div>
+      </div>
+      <div class="hero-visual">
+        <div class="pulse-circle"></div>
+        <div class="scan-line"></div>
+        <i class="fas fa-shield-virus"></i>
+      </div>
+    </section>
+
+    <!-- Main Detector Section -->
+    <section id="detector" class="detector-section">
+      <div class="section-header">
+        <h2><i class="fas fa-search"></i> Toxicity Detector</h2>
+        <p>Enter text below to analyze for toxic content</p>
+      </div>
+
+      <div class="detector-container">
+        <div class="input-area">
+          <div class="input-header">
+            <h3><i class="fas fa-keyboard"></i> Input Text</h3>
+            <div class="char-count">
+              <span id="charCount">0</span> / 500 characters
+            </div>
+          </div>
+          <textarea
+            id="textInput"
+            placeholder="Type or paste your comment here... (e.g., 'You are amazing!' or 'I hate you')"
+            maxlength="500"
+          ></textarea>
+          <div class="input-actions">
+            <button id="clearBtn" class="btn-secondary">
+              <i class="fas fa-eraser"></i> Clear
+            </button>
+            <button id="analyzeBtn" class="btn-primary">
+              <i class="fas fa-play-circle"></i> Analyze Text
+            </button>
+            <button id="sampleBtn" class="btn-secondary">
+              <i class="fas fa-random"></i> Sample Text
+            </button>
+          </div>
+        </div>
+
+        <div class="results-area">
+          <div class="results-header">
+            <h3><i class="fas fa-chart-bar"></i> Analysis Results</h3>
+            <div class="status-indicator" id="statusIndicator">
+              <span class="status-dot"></span>
+              <span class="status-text">Ready</span>
+            </div>
+          </div>
+
+          <div class="toxicity-meter-container">
+            <div class="toxicity-label">
+              <span>Toxicity Level</span>
+              <span id="toxicityPercent">0%</span>
+            </div>
+            <div class="toxicity-meter">
+              <div class="meter-track">
+                <div class="glowing-line" id="toxicityLine"></div>
+                <div class="position-dot" id="toxicityDot">
+                  <i class="fas fa-bullseye"></i>
+                </div>
+              </div>
+              <div class="meter-labels">
+                <span>Safe</span>
+                <span>Warning</span>
+                <span>Toxic</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="verdict-card">
+            <div class="verdict-header">
+              <i class="fas fa-gavel"></i>
+              <h4>Final Verdict</h4>
+            </div>
+            <div class="verdict-content" id="verdictContent">
+              <div class="verdict-icon" id="verdictIcon">
+                <i class="fas fa-question-circle"></i>
+              </div>
+              <div class="verdict-text">
+                <h3 id="verdictTitle">Awaiting Analysis</h3>
+                <p id="verdictDescription">
+                  Enter text and click "Analyze Text" to check for toxicity.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div class="analysis-details">
+            <div class="detail-card">
+              <div class="detail-header">
+                <i class="fas fa-brain"></i>
+                <h4>AI Confidence</h4>
+              </div>
+              <div class="detail-content">
+                <div class="confidence-meter">
+                  <div class="confidence-fill" id="confidenceFill"></div>
+                </div>
+                <div class="confidence-value" id="confidenceValue">--%</div>
+              </div>
+            </div>
+
+            <div class="detail-card">
+              <div class="detail-header">
+                <i class="fas fa-search-plus"></i>
+                <h4>Pattern Detection</h4>
+              </div>
+              <div class="detail-content">
+                <div class="pattern-tags" id="patternTags">
+                  <!-- Tags will be dynamically added -->
+                </div>
+              </div>
+            </div>
+
+            <div class="detail-card">
+              <div class="detail-header">
+                <i class="fas fa-exclamation-triangle"></i>
+                <h4>Toxic Words Found</h4>
+              </div>
+              <div class="detail-content">
+                <div class="toxic-words" id="toxicWords">
+                  <!-- Toxic words will be dynamically added -->
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Analysis History Section -->
+    <section id="analysis" class="history-section">
+      <div class="section-header">
+        <h2><i class="fas fa-history"></i> Analysis History</h2>
+        <p>Recent toxicity detections and results</p>
+      </div>
+      <div class="history-container">
+        <div class="history-list" id="historyList">
+          <!-- History items will be dynamically added -->
+        </div>
+      </div>
+    </section>
+
+    <!-- Examples Section -->
+    <section id="examples" class="examples-section">
+      <div class="section-header">
+        <h2><i class="fas fa-vial"></i> Test Examples</h2>
+        <p>Try these sample texts to see the detector in action</p>
+      </div>
+      <div class="examples-container">
+        <div class="example-card safe-example">
+          <div class="example-header">
+            <i class="fas fa-thumbs-up"></i>
+            <h4>Non-Toxic Examples</h4>
+          </div>
+          <div class="example-content">
+            <p>
+              "Great job on the presentation! Very informative and
+              well-organized."
+            </p>
+            <p>
+              "I appreciate your help with this project. Thank you for your
+              support!"
+            </p>
+            <p>
+              "This is an interesting perspective I hadn't considered before."
+            </p>
+          </div>
+          <button
+            class="example-btn"
+            data-text="Great job on the presentation! Very informative and well-organized."
+          >
+            <i class="fas fa-play"></i> Test This
+          </button>
+        </div>
+
+        <div class="example-card warning-example">
+          <div class="example-header">
+            <i class="fas fa-exclamation-triangle"></i>
+            <h4>Warning Examples</h4>
+          </div>
+          <div class="example-content">
+            <p>
+              "This could have been done better. I'm disappointed with the
+              results."
+            </p>
+            <p>"I strongly disagree with your approach on this matter."</p>
+            <p>"The quality is not up to the expected standard."</p>
+          </div>
+          <button
+            class="example-btn"
+            data-text="This could have been done better. I'm disappointed with the results."
+          >
+            <i class="fas fa-play"></i> Test This
+          </button>
+        </div>
+
+        <div class="example-card toxic-example">
+          <div class="example-header">
+            <i class="fas fa-skull-crossbones"></i>
+            <h4>Toxic Examples</h4>
+          </div>
+          <div class="example-content">
+            <p>
+              "You're an idiot who doesn't know what they're talking about."
+            </p>
+            <p>
+              "This is complete garbage. You should be ashamed of this work."
+            </p>
+            <p>"I hate you and everything you stand for. You're worthless."</p>
+          </div>
+          <button
+            class="example-btn"
+            data-text="You're an idiot who doesn't know what they're talking about."
+          >
+            <i class="fas fa-play"></i> Test This
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about" class="about-section">
+      <div class="section-header">
+        <h2><i class="fas fa-info-circle"></i> About ToxiScan AI</h2>
+        <p>How our toxicity detection system works</p>
+      </div>
+      <div class="about-container">
+        <div class="about-content">
+          <div class="about-step">
+            <div class="step-number">1</div>
+            <div class="step-content">
+              <h4>Text Processing</h4>
+              <p>
+                Our system cleans and normalizes text by removing URLs,
+                mentions, and special characters, then converts to lowercase.
+              </p>
+            </div>
+          </div>
+          <div class="about-step">
+            <div class="step-number">2</div>
+            <div class="step-content">
+              <h4>Toxic Word Detection</h4>
+              <p>
+                We check for explicit toxic words from our database, including
+                slurs, profanity, and harmful language patterns.
+              </p>
+            </div>
+          </div>
+          <div class="about-step">
+            <div class="step-number">3</div>
+            <div class="step-content">
+              <h4>Machine Learning Analysis</h4>
+              <p>
+                Using Logistic Regression with TF-IDF vectorization, our model
+                analyzes text patterns to detect subtle toxicity.
+              </p>
+            </div>
+          </div>
+          <div class="about-step">
+            <div class="step-number">4</div>
+            <div class="step-content">
+              <h4>Confidence Scoring</h4>
+              <p>
+                The system calculates confidence scores and provides detailed
+                analysis with visual feedback.
+              </p>
+            </div>
+          </div>
+        </div>
+        <div class="about-tech">
+          <h4><i class="fas fa-microchip"></i> Technology Stack</h4>
+          <div class="tech-tags">
+            <span class="tech-tag">Python</span>
+            <span class="tech-tag">scikit-learn</span>
+            <span class="tech-tag">NLTK</span>
+            <span class="tech-tag">TF-IDF</span>
+            <span class="tech-tag">Logistic Regression</span>
+            <span class="tech-tag">JavaScript</span>
+            <span class="tech-tag">HTML5/CSS3</span>
+          </div>
+          <div class="accuracy-display">
+            <div class="accuracy-meter">
+              <div class="accuracy-fill" style="width: 95.2%"></div>
+            </div>
+            <div class="accuracy-text">95.2% Accuracy Rate</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <div class="footer-content">
+        <div class="footer-logo">
+          <i class="fas fa-radiation-alt"></i>
+          <span>ToxiScan<span class="logo-ai">AI</span></span>
+        </div>
+        <p class="footer-description">
+          Advanced AI-powered toxicity detection for safer online communities.
+        </p>
+        <div class="footer-links">
+          <a href="#detector">Detector</a>
+          <a href="#analysis">Analysis</a>
+          <a href="#examples">Examples</a>
+          <a href="#about">About</a>
+        </div>
+        <div class="footer-bottom">
+          <p>
+            &copy; 2024 ToxiScan AI. All rights reserved. | Made with
+            <i class="fas fa-heart"></i> for safer online spaces
+          </p>
+        </div>
+      </div>
+    </footer>
+
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+      <div class="loading-content">
+        <div class="loading-spinner">
+          <div class="spinner-circle"></div>
+          <i class="fas fa-shield-alt"></i>
+        </div>
+        <h3>Analyzing Text</h3>
+        <p>Scanning for toxic patterns...</p>
+      </div>
+    </div>
+
+    <script src="script.js"></script>
+  </body>
+</html>
