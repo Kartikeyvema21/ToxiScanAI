@@ -9,17 +9,22 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import accuracy_score, classification_report
 from sklearn.model_selection import train_test_split
-from nltk.corpus import stopwords
-from nltk.tokenize import word_tokenize
 
 warnings.filterwarnings("ignore")
 
 app = Flask(__name__, static_folder="static", template_folder="templates")
 
 # Download NLTK data if needed
-
-
+nltk.data.path.append("/opt/render/nltk_data")
+from nltk.corpus import stopwords
+from nltk.tokenize import word_tokenize
 STOP_WORDS = set(stopwords.words("english"))
+
+def clean_text(text):
+    words = word_tokenize(text.lower())
+    words = [w for w in words if w not in STOP_WORDS]
+    return " ".join(words)
+
 
 EXPLICIT_TOXIC_WORDS = {
     "hate", "stupid", "suck", "terrible", "worst",
