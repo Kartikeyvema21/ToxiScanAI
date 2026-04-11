@@ -16,11 +16,7 @@ warnings.filterwarnings("ignore")
 # -----------------------------
 # Download NLTK data
 # -----------------------------
-nltk.download("stopwords")
-nltk.download("punkt")
-STOP_WORDS = set(stopwords.words("english"))
-
-# -----------------------------
+-----------
 # Dataset loader (safe)
 # -----------------------------
 def load_or_create_dataset(file_name="sample_toxic_comments.csv"):

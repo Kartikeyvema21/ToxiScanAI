@@ -10,14 +10,14 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import accuracy_score, classification_report
 from sklearn.model_selection import train_test_split
 from nltk.corpus import stopwords
+from nltk.tokenize import word_tokenize
 
 warnings.filterwarnings("ignore")
 
 app = Flask(__name__, static_folder="static", template_folder="templates")
 
 # Download NLTK data if needed
-nltk.download("stopwords", quiet=True)
-nltk.data.path.append('/opt/render/nltk_data')
+
 
 STOP_WORDS = set(stopwords.words("english"))
 
