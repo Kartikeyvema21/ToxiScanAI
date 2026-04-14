@@ -16,7 +16,7 @@ from nltk.corpus import stopwords
 warnings.filterwarnings("ignore")
 
 app = Flask(__name__, static_folder="static", template_folder="templates")
-app.secret_key = 'sk-0ab05714bf4a440dacf78b5e4ef38c95'
+app.secret_key = os.environ.get('sk-0ab05714bf4a440dacf78b5e4ef38c95', 'sk-0ab05714bf4a440dacf78b5e4ef38c95')
 CORS(app, supports_credentials=True)
 
 # Configuration
@@ -190,7 +190,10 @@ def get_toxicity_score(text):
     
     return {"toxicity_score": round(toxicity_score, 2), "toxicity_level": toxicity_level, "color": color, "ml_confidence": round(confidence * 100, 2), "ml_prediction": "Toxic" if prediction == 1 else "Non-Toxic", "explicit_words": found_explicit, "word_count": len(words)}
 
-# Routes
+# ============================================
+# ROUTES
+# ============================================
+
 @app.route("/")
 def home():
     return render_template("index.html")
@@ -204,6 +207,16 @@ def dashboard():
     if 'username' not in session:
         return redirect('/login')
     return render_template("dashboard.html")
+
+# IMPORTANT: Health check for Render
+@app.route('/health', methods=['GET'])
+def health_check():
+    return jsonify({
+        "status": "healthy",
+        "message": "ToxiScan AI is running",
+        "initialized": _initialized,
+        "timestamp": datetime.now().isoformat()
+    }), 200
 
 @app.route("/api/auth/register", methods=["POST"])
 def register():
@@ -250,7 +263,19 @@ def analyze_text():
         if not data or "text" not in data:
             return jsonify({"error": "No text provided"}), 400
         result = get_toxicity_score(data["text"])
-        return jsonify({"original_text": data["text"], "cleaned_text": clean_text(data["text"]), "explicit_toxic_words": result["explicit_words"], "analysis": {"toxicity_score": result["toxicity_score"], "toxicity_level": result["toxicity_level"], "color": result["color"], "ml_confidence": result["ml_confidence"], "ml_prediction": result["ml_prediction"], "word_count": result["word_count"]}})
+        return jsonify({
+            "original_text": data["text"],
+            "cleaned_text": clean_text(data["text"]),
+            "explicit_toxic_words": result["explicit_words"],
+            "analysis": {
+                "toxicity_score": result["toxicity_score"],
+                "toxicity_level": result["toxicity_level"],
+                "color": result["color"],
+                "ml_confidence": result["ml_confidence"],
+                "ml_prediction": result["ml_prediction"],
+                "word_count": result["word_count"]
+            }
+        })
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
@@ -258,22 +283,36 @@ def analyze_text():
 def get_analytics():
     analytics = load_analytics()
     dates = sorted(analytics["daily_stats"].keys())[-30:]
-    return jsonify({"total": analytics["total_analyses"], "toxic_count": analytics["toxic_count"], "warning_count": analytics["warning_count"], "safe_count": analytics["safe_count"], "dates": dates, "toxic_data": [analytics["daily_stats"].get(d, {}).get("toxic", 0) for d in dates], "warning_data": [analytics["daily_stats"].get(d, {}).get("warning", 0) for d in dates], "safe_data": [analytics["daily_stats"].get(d, {}).get("safe", 0) for d in dates], "recent": analytics["recent_analyses"][:10]})
-
-@app.route("/api/health", methods=["GET"])
-def health():
-    return jsonify({"status": "ok"})
+    return jsonify({
+        "total": analytics["total_analyses"],
+        "toxic_count": analytics["toxic_count"],
+        "warning_count": analytics["warning_count"],
+        "safe_count": analytics["safe_count"],
+        "dates": dates,
+        "toxic_data": [analytics["daily_stats"].get(d, {}).get("toxic", 0) for d in dates],
+        "warning_data": [analytics["daily_stats"].get(d, {}).get("warning", 0) for d in dates],
+        "safe_data": [analytics["daily_stats"].get(d, {}).get("safe", 0) for d in dates],
+        "recent": analytics["recent_analyses"][:10]
+    })
 
 @app.route('/static/<path:path>')
 def serve_static(path):
     return send_from_directory('static', path)
+
+# ============================================
+# MAIN
+# ============================================
 
 if __name__ == "__main__":
     print("\n" + "=" * 50)
     print("TOXISCAN AI - RUNNING")
     print("=" * 50)
     initialize_app()
-    print("\n🌐 http://localhost:5000")
+    
+    port = int(os.environ.get("PORT", 5000))
+    print(f"\n🌐 Server running on port: {port}")
     print("🔐 admin / admin123 | demo / demo123")
+    print("✅ Health check: /health")
     print("\n" + "=" * 50 + "\n")
-    app.run(debug=True, host="0.0.0.0", port=5000)
+    
+    app.run(debug=False, host="0.0.0.0", port=port)
