@@ -1,0 +1,99 @@
+{
+  "total_analyses": 14,
+  "toxic_count": 3,
+  "warning_count": 1,
+  "safe_count": 10,
+  "daily_stats": {
+    "2026-04-14": {
+      "toxic": 3,
+      "warning": 1,
+      "safe": 10
+    }
+  },
+  "recent_analyses": [
+    {
+      "text": "you idiot",
+      "level": "Safe",
+      "score": 15,
+      "timestamp": "2026-04-14T15:11:48.315892"
+    },
+    {
+      "text": "I hate you and everything you stand for. You're worthless.",
+      "level": "Toxic",
+      "score": 74.65,
+      "timestamp": "2026-04-14T15:10:10.180430"
+    },
+    {
+      "text": "Great job on the presentation! Very informative and well-organized.",
+      "level": "Safe",
+      "score": 0,
+      "timestamp": "2026-04-14T15:10:08.475387"
+    },
+    {
+      "text": "You're an idiot who doesn't know what they're talking about.",
+      "level": "Safe",
+      "score": 15,
+      "timestamp": "2026-04-14T15:10:04.442614"
+    },
+    {
+      "text": "This is complete garbage. You should be ashamed of this work.",
+      "level": "Safe",
+      "score": 15,
+      "timestamp": "2026-04-14T15:09:58.981225"
+    },
+    {
+      "text": "Great job on the presentation! Very informative and well-organized.",
+      "level": "Safe",
+      "score": 0,
+      "timestamp": "2026-04-14T15:09:56.046038"
+    },
+    {
+      "text": "I hate you and everything you stand for. You're a terrible person.",
+      "level": "Toxic",
+      "score": 74.65,
+      "timestamp": "2026-04-14T14:08:18.442520"
+    },
+    {
+      "text": "This is okay, but could be improved. Let's work together.",
+      "level": "Safe",
+      "score": 0,
+      "timestamp": "2026-04-14T14:08:16.392086"
+    },
+    {
+      "text": "The presentation was informative and well-structured. Good work!",
+      "level": "Safe",
+      "score": 0,
+      "timestamp": "2026-04-14T14:08:15.041055"
+    },
+    {
+      "text": "Great job on the project! I really appreciate your hard work.",
+      "level": "Safe",
+      "score": 0,
+      "timestamp": "2026-04-14T14:08:13.687836"
+    },
+    {
+      "text": "You are completely wrong and have no idea what you're talking about.",
+      "level": "Warning",
+      "score": 37.08,
+      "timestamp": "2026-04-14T14:08:11.273079"
+    },
+    {
+      "text": "Great job on the project! I really appreciate your hard work.",
+      "level": "Safe",
+      "score": 0,
+      "timestamp": "2026-04-14T14:08:09.781035"
+    },
+    {
+      "text": "Thank you for your help. I couldn't have done it without you!",
+      "level": "Safe",
+      "score": 0,
+      "timestamp": "2026-04-14T14:08:06.649880"
+    },
+    {
+      "text": "I hate you and everything you stand for. You're a terrible person.",
+      "level": "Toxic",
+      "score": 74.65,
+      "timestamp": "2026-04-14T14:00:28.392991"
+    }
+  ]
+}

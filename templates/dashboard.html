@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - ToxiScan AI</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/static/css/dashboard.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="logo">
+                <i class="fas fa-radiation-alt"></i>
+                <span>ToxiScan <span style="color: var(--primary);">AI</span></span>
+            </div>
+            <div class="nav-links">
+                <a href="/" target="_blank">Home</a>
+                <div class="user-info">
+                    <span id="username"><i class="fas fa-user-circle"></i> User</span>
+                    <button class="logout-btn" onclick="logout()">Logout</button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <!-- Stats Cards -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-header">
+                    <span class="stat-label">Total Analyses</span>
+                    <i class="fas fa-chart-line"></i>
+                </div>
+                <div class="stat-value" id="totalAnalyses">0</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-header">
+                    <span class="stat-label">Toxic</span>
+                    <i class="fas fa-skull-crossbones" style="color: var(--danger);"></i>
+                </div>
+                <div class="stat-value" id="toxicCount">0</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-header">
+                    <span class="stat-label">Warning</span>
+                    <i class="fas fa-exclamation-triangle" style="color: var(--warning);"></i>
+                </div>
+                <div class="stat-value" id="warningCount">0</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-header">
+                    <span class="stat-label">Safe</span>
+                    <i class="fas fa-check-circle" style="color: var(--success);"></i>
+                </div>
+                <div class="stat-value" id="safeCount">0</div>
+            </div>
+        </div>
+
+        <!-- Charts -->
+        <div class="charts-grid">
+            <div class="chart-card">
+                <div class="chart-title">
+                    <i class="fas fa-chart-bar"></i>
+                    <span>Toxicity Trends (Last 7 Days)</span>
+                </div>
+                <canvas id="trendChart"></canvas>
+            </div>
+            <div class="chart-card">
+                <div class="chart-title">
+                    <i class="fas fa-chart-pie"></i>
+                    <span>Overall Distribution</span>
+                </div>
+                <canvas id="pieChart"></canvas>
+            </div>
+        </div>
+
+        <!-- Recent Analyses -->
+        <div class="recent-card">
+            <div class="recent-title">
+                <i class="fas fa-history"></i>
+                <span>Recent Analyses</span>
+            </div>
+            <div class="recent-list" id="recentList">
+                <div style="text-align: center; color: var(--text-secondary);">No analyses yet</div>
+            </div>
+        </div>
+
+        <!-- Toxicity Detector -->
+        <div class="detector-section">
+            <div class="detector-title">
+                <i class="fas fa-search"></i> Real-time Toxicity Detector
+            </div>
+            <textarea id="textInput" rows="4" placeholder="Enter text to analyze for toxicity..."></textarea>
+            <button class="analyze-btn" onclick="analyzeText()">Analyze Text</button>
+            <div id="result" class="result-box"></div>
+        </div>
+    </div>
+
+    <script src="/static/js/dashboard.js"></script>
+</body>
+</html>
