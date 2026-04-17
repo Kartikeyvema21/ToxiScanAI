@@ -1,16 +1,279 @@
 {
-  "total_analyses": 14,
-  "toxic_count": 3,
-  "warning_count": 1,
-  "safe_count": 10,
+  "total_analyses": 57,
+  "toxic_count": 4,
+  "warning_count": 37,
+  "safe_count": 16,
   "daily_stats": {
     "2026-04-14": {
       "toxic": 3,
-      "warning": 1,
-      "safe": 10
+      "warning": 3,
+      "safe": 12
+    },
+    "2026-04-17": {
+      "toxic": 1,
+      "warning": 34,
+      "safe": 4
     }
   },
   "recent_analyses": [
+    {
+      "text": "stupiddd behaviour",
+      "level": "Toxic",
+      "score": 86,
+      "timestamp": "2026-04-17T15:31:53.682892"
+    },
+    {
+      "text": "Deepanshi",
+      "level": "Safe",
+      "score": 0,
+      "timestamp": "2026-04-17T15:31:31.637213"
+    },
+    {
+      "text": "Deepanshi",
+      "level": "Safe",
+      "score": 0,
+      "timestamp": "2026-04-17T15:30:48.401786"
+    },
+    {
+      "text": "Kartikey",
+      "level": "Safe",
+      "score": 0,
+      "timestamp": "2026-04-17T15:29:57.734132"
+    },
+    {
+      "text": "Kartikey",
+      "level": "Warning",
+      "score": 37.08,
+      "timestamp": "2026-04-17T15:14:03.865347"
+    },
+    {
+      "text": "Kartikey",
+      "level": "Warning",
+      "score": 37.08,
+      "timestamp": "2026-04-17T15:11:59.724934"
+    },
+    {
+      "text": "Kartikey",
+      "level": "Warning",
+      "score": 37.08,
+      "timestamp": "2026-04-17T15:11:06.405351"
+    },
+    {
+      "text": "Kartikey",
+      "level": "Warning",
+      "score": 37.08,
+      "timestamp": "2026-04-17T15:09:19.102321"
+    },
+    {
+      "text": "Kartikey",
+      "level": "Warning",
+      "score": 37.08,
+      "timestamp": "2026-04-17T14:59:21.063708"
+    },
+    {
+      "text": "Kartikey",
+      "level": "Warning",
+      "score": 37.08,
+      "timestamp": "2026-04-17T14:54:05.414106"
+    },
+    {
+      "text": "Bob",
+      "level": "Warning",
+      "score": 37.08,
+      "timestamp": "2026-04-17T14:52:47.072723"
+    },
+    {
+      "text": "Bob",
+      "level": "Warning",
+      "score": 37.08,
+      "timestamp": "2026-04-17T14:52:25.470134"
+    },
+    {
+      "text": "Bob",
+      "level": "Warning",
+      "score": 37.08,
+      "timestamp": "2026-04-17T14:50:41.834275"
+    },
+    {
+      "text": "Bob",
+      "level": "Warning",
+      "score": 37.08,
+      "timestamp": "2026-04-17T14:50:41.169741"
+    },
+    {
+      "text": "Bob",
+      "level": "Warning",
+      "score": 37.08,
+      "timestamp": "2026-04-17T14:50:39.556693"
+    },
+    {
+      "text": "Bob",
+      "level": "Warning",
+      "score": 37.08,
+      "timestamp": "2026-04-17T14:50:38.907180"
+    },
+    {
+      "text": "Bob",
+      "level": "Warning",
+      "score": 37.08,
+      "timestamp": "2026-04-17T14:49:51.340969"
+    },
+    {
+      "text": "Jack",
+      "level": "Warning",
+      "score": 37.08,
+      "timestamp": "2026-04-17T14:49:25.973658"
+    },
+    {
+      "text": "Oliva",
+      "level": "Warning",
+      "score": 37.08,
+      "timestamp": "2026-04-17T14:49:20.223963"
+    },
+    {
+      "text": "Kartikey",
+      "level": "Warning",
+      "score": 37.08,
+      "timestamp": "2026-04-17T14:49:11.112994"
+    },
+    {
+      "text": "Sarah is stupid",
+      "level": "Warning",
+      "score": 45.08,
+      "timestamp": "2026-04-17T14:48:50.907370"
+    },
+    {
+      "text": "sooo stupid",
+      "level": "Warning",
+      "score": 45.08,
+      "timestamp": "2026-04-17T14:48:50.884892"
+    },
+    {
+      "text": "stupidddd behaviour",
+      "level": "Warning",
+      "score": 45.08,
+      "timestamp": "2026-04-17T14:48:50.862822"
+    },
+    {
+      "text": "Michael",
+      "level": "Warning",
+      "score": 37.08,
+      "timestamp": "2026-04-17T14:48:50.839645"
+    },
+    {
+      "text": "Sarah",
+      "level": "Warning",
+      "score": 37.08,
+      "timestamp": "2026-04-17T14:48:50.817903"
+    },
+    {
+      "text": "Kartikey",
+      "level": "Warning",
+      "score": 37.08,
+      "timestamp": "2026-04-17T14:36:14.751377"
+    },
+    {
+      "text": "Alice you are stupid",
+      "level": "Warning",
+      "score": 45.08,
+      "timestamp": "2026-04-17T14:36:00.741717"
+    },
+    {
+      "text": "stupidddd behaviour",
+      "level": "Warning",
+      "score": 45.08,
+      "timestamp": "2026-04-17T14:36:00.722915"
+    },
+    {
+      "text": "Alice",
+      "level": "Warning",
+      "score": 37.08,
+      "timestamp": "2026-04-17T14:36:00.703094"
+    },
+    {
+      "text": "Deepanshi",
+      "level": "Warning",
+      "score": 37.08,
+      "timestamp": "2026-04-17T14:35:45.842824"
+    },
+    {
+      "text": "Deepanshi",
+      "level": "Warning",
+      "score": 37.08,
+      "timestamp": "2026-04-17T14:35:45.647327"
+    },
+    {
+      "text": "Deepanshi",
+      "level": "Warning",
+      "score": 37.08,
+      "timestamp": "2026-04-17T14:35:45.478655"
+    },
+    {
+      "text": "Deepanshi",
+      "level": "Warning",
+      "score": 37.08,
+      "timestamp": "2026-04-17T14:35:45.280078"
+    },
+    {
+      "text": "Deepanshi",
+      "level": "Warning",
+      "score": 37.08,
+      "timestamp": "2026-04-17T14:35:45.113172"
+    },
+    {
+      "text": "Deepanshi",
+      "level": "Warning",
+      "score": 37.08,
+      "timestamp": "2026-04-17T14:35:42.338194"
+    },
+    {
+      "text": "kartikey",
+      "level": "Warning",
+      "score": 37.08,
+      "timestamp": "2026-04-17T14:35:27.941279"
+    },
+    {
+      "text": "stupidddd behaviour",
+      "level": "Warning",
+      "score": 45.08,
+      "timestamp": "2026-04-17T14:28:04.306359"
+    },
+    {
+      "text": "Deepanshi mam is great",
+      "level": "Safe",
+      "score": 25.6,
+      "timestamp": "2026-04-17T14:28:03.884985"
+    },
+    {
+      "text": "Kartikey",
+      "level": "Warning",
+      "score": 37.08,
+      "timestamp": "2026-04-17T14:26:37.971290"
+    },
+    {
+      "text": "idiot",
+      "level": "Safe",
+      "score": 15,
+      "timestamp": "2026-04-14T15:31:21.159120"
+    },
+    {
+      "text": "This is an interesting perspective I hadn't considered before.",
+      "level": "Warning",
+      "score": 37.08,
+      "timestamp": "2026-04-14T15:31:04.253161"
+    },
+    {
+      "text": "Great job on the presentation! Very informative and well-organized.",
+      "level": "Safe",
+      "score": 0,
+      "timestamp": "2026-04-14T15:31:02.293535"
+    },
+    {
+      "text": "This is an interesting perspective I hadn't considered before.",
+      "level": "Warning",
+      "score": 37.08,
+      "timestamp": "2026-04-14T15:30:12.454997"
+    },
     {
       "text": "you idiot",
       "level": "Safe",
@@ -52,48 +315,6 @@
       "level": "Toxic",
       "score": 74.65,
       "timestamp": "2026-04-14T14:08:18.442520"
-    },
-    {
-      "text": "This is okay, but could be improved. Let's work together.",
-      "level": "Safe",
-      "score": 0,
-      "timestamp": "2026-04-14T14:08:16.392086"
-    },
-    {
-      "text": "The presentation was informative and well-structured. Good work!",
-      "level": "Safe",
-      "score": 0,
-      "timestamp": "2026-04-14T14:08:15.041055"
-    },
-    {
-      "text": "Great job on the project! I really appreciate your hard work.",
-      "level": "Safe",
-      "score": 0,
-      "timestamp": "2026-04-14T14:08:13.687836"
-    },
-    {
-      "text": "You are completely wrong and have no idea what you're talking about.",
-      "level": "Warning",
-      "score": 37.08,
-      "timestamp": "2026-04-14T14:08:11.273079"
-    },
-    {
-      "text": "Great job on the project! I really appreciate your hard work.",
-      "level": "Safe",
-      "score": 0,
-      "timestamp": "2026-04-14T14:08:09.781035"
-    },
-    {
-      "text": "Thank you for your help. I couldn't have done it without you!",
-      "level": "Safe",
-      "score": 0,
-      "timestamp": "2026-04-14T14:08:06.649880"
-    },
-    {
-      "text": "I hate you and everything you stand for. You're a terrible person.",
-      "level": "Toxic",
-      "score": 74.65,
-      "timestamp": "2026-04-14T14:00:28.392991"
     }
   ]
 }

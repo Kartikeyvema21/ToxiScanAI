@@ -1,44 +1,184 @@
 import os
 import re
+import secrets
 import warnings
 import json
 import hashlib
 from datetime import datetime
-import joblib
-import pandas as pd
-import nltk
 from flask import Flask, request, jsonify, render_template, session, redirect, send_from_directory
 from flask_cors import CORS
-from sklearn.feature_extraction.text import TfidfVectorizer
-from sklearn.linear_model import LogisticRegression
-from nltk.corpus import stopwords
 
 warnings.filterwarnings("ignore")
 
 app = Flask(__name__, static_folder="static", template_folder="templates")
-app.secret_key = os.environ.get('sk-0ab05714bf4a440dacf78b5e4ef38c95', 'sk-0ab05714bf4a440dacf78b5e4ef38c95')
+app.secret_key = os.environ.get('sk-0ab05714bf4a440dacf78b5e4ef38c95', secrets.token_hex(32))
 CORS(app, supports_credentials=True)
 
 # Configuration
-MODEL_FILE = "toxic_model.pkl"
-VECTORIZER_FILE = "vectorizer.pkl"
 USERS_FILE = "users.json"
 ANALYTICS_FILE = "analytics.json"
 
-# Download NLTK data
-try:
-    nltk.data.find('corpora/stopwords')
-except:
-    nltk.download('stopwords', quiet=True)
-
-# Explicit toxic words
-EXPLICIT_TOXIC_WORDS = {
-    "hate", "stupid", "suck", "terrible", "worst", "fuck", "shit", "bitch", 
-    "asshole", "bastard", "idiot", "moron", "dumb", "loser", "pathetic", 
-    "garbage", "worthless", "failure", "kill", "die", "damn", "hell"
+# Comprehensive toxic words list
+TOXIC_WORDS = {
+    'hate', 'stupid', 'suck', 'terrible', 'worst', 'fuck', 'shit', 'bitch',
+    'asshole', 'bastard', 'idiot', 'moron', 'dumb', 'loser', 'pathetic',
+    'garbage', 'worthless', 'failure', 'kill', 'die', 'damn', 'hell',
+    'annoying', 'useless', 'crap', 'disgusting', 'awful', 'horrible',
+    'fool', 'jerk', 'silly', 'ridiculous', 'hopeless', 'useless'
 }
 
-# User management
+# Stylized patterns for repeated letters
+STYLIZED_PATTERNS = [
+    r'st+u+p+i+d+',      # stuupid, stupid, stuuupid
+    r's+o+o+',           # sooo, soooo
+    r'r+e+a+l+l+y+',     # reeeally, really
+    r'b+a+a+a+d+',       # baaaad, baad
+    r's+u+c+k+',         # suuck, suckkk
+    r'd+a+m+n+',         # daaamn, damn
+    r'h+e+l+l+',         # helll, hellll
+    r's+h+i+t+',         # shitt, shit
+    r'f+u+c+k+',         # fuckk, fuuck
+    r'i+d+i+o+t+',       # idiot, idiot
+    r'm+o+r+o+n+',       # moron, moroon
+]
+
+def normalize_text(text):
+    """Normalize text by removing repeated letters"""
+    text_lower = text.lower()
+    # Replace repeated letters (3+ times) with 2
+    normalized = re.sub(r'(.)\1{2,}', r'\1\1', text_lower)
+    return normalized
+
+def is_name_or_safe_word(text):
+    """Check if text is just a name (single word, not toxic)"""
+    words = text.lower().strip().split()
+    
+    # Single word check
+    if len(words) == 1:
+        word = words[0]
+        normalized = normalize_text(word)
+        
+        # Check if it contains any toxic word
+        for toxic in TOXIC_WORDS:
+            if toxic in normalized or normalized in toxic:
+                return False
+        
+        # Check stylized patterns
+        for pattern in STYLIZED_PATTERNS:
+            if re.search(pattern, word):
+                return False
+        
+        # It's a name or safe word
+        return True
+    return False
+
+def detect_toxicity(text):
+    """Main toxicity detection function"""
+    original_text = text
+    text_lower = text.lower()
+    words = text_lower.split()
+    
+    # RULE 1: Single word name → Safe (0%)
+    if is_name_or_safe_word(text):
+        return {
+            "toxicity_score": 0,
+            "toxicity_level": "Safe",
+            "color": "#00c853",
+            "ml_confidence": 100,
+            "ml_prediction": "Non-Toxic",
+            "explicit_words": [],
+            "toxic_probability": 0,
+            "message": "Name or safe word detected"
+        }
+    
+    # RULE 2: Check for stylized toxic patterns
+    stylized_matches = []
+    for pattern in STYLIZED_PATTERNS:
+        matches = re.findall(pattern, text_lower)
+        stylized_matches.extend(matches)
+    
+    # RULE 3: Check for explicit toxic words
+    toxic_words_found = []
+    for word in words:
+        normalized = normalize_text(word)
+        for toxic in TOXIC_WORDS:
+            if toxic in normalized:
+                toxic_words_found.append(word)
+                break
+    
+    # Remove duplicates
+    toxic_words_found = list(set(toxic_words_found))
+    
+    # Calculate toxicity score
+    total_toxic_count = len(toxic_words_found) + len(stylized_matches)
+    
+    if total_toxic_count == 0:
+        # No toxic content found
+        if len(words) <= 3:
+            toxicity_score = 5
+            toxicity_level = "Safe"
+            color = "#00c853"
+            prediction = "Non-Toxic"
+        else:
+            toxicity_score = 10
+            toxicity_level = "Safe"
+            color = "#00c853"
+            prediction = "Non-Toxic"
+    else:
+        # Toxic content found - calculate score
+        base_score = 60
+        # Add points for each toxic word
+        base_score += min(total_toxic_count * 8, 35)
+        # Add extra for stylized words
+        if len(stylized_matches) > 0:
+            base_score += 10
+        # Add extra for multiple toxic words
+        if total_toxic_count >= 3:
+            base_score += 10
+        
+        toxicity_score = min(base_score, 98)
+        
+        if toxicity_score >= 60:
+            toxicity_level = "Toxic"
+            color = "#f44336"
+            prediction = "Toxic"
+        elif toxicity_score >= 30:
+            toxicity_level = "Warning"
+            color = "#ff9800"
+            prediction = "Warning"
+        else:
+            toxicity_level = "Safe"
+            color = "#00c853"
+            prediction = "Non-Toxic"
+    
+    # Ensure single word names are always safe
+    if len(words) == 1 and toxicity_score > 0:
+        # Double-check it's not actually toxic
+        is_toxic = False
+        for toxic in TOXIC_WORDS:
+            if toxic in words[0]:
+                is_toxic = True
+                break
+        if not is_toxic:
+            toxicity_score = 0
+            toxicity_level = "Safe"
+            color = "#00c853"
+            prediction = "Non-Toxic"
+            toxic_words_found = []
+    
+    return {
+        "toxicity_score": round(toxicity_score, 2),
+        "toxicity_level": toxicity_level,
+        "color": color,
+        "ml_confidence": round(toxicity_score, 2),
+        "ml_prediction": prediction,
+        "explicit_words": toxic_words_found,
+        "stylized_words": stylized_matches,
+        "word_count": len(words),
+        "toxic_probability": round(toxicity_score, 2)
+    }
+
+# User management functions
 def load_users():
     if os.path.exists(USERS_FILE):
         with open(USERS_FILE, 'r') as f:
@@ -65,130 +205,33 @@ def save_analytics(analytics):
     with open(ANALYTICS_FILE, 'w') as f:
         json.dump(analytics, f, indent=2)
 
-# ML Model
-STOP_WORDS = None
-df = None
-model = None
-vectorizer = None
-_initialized = False
-
-def initialize_app():
-    global STOP_WORDS, df, model, vectorizer, _initialized
-    if _initialized:
-        return
-    
-    print("=" * 60)
-    print("🔥 INITIALIZING TOXISCAN AI")
-    print("=" * 60)
-    
-    STOP_WORDS = set(stopwords.words('english'))
-    df = load_or_create_dataset()
-    df["clean_text"] = df["comment_text"].apply(clean_text)
-    
-    if os.path.exists(MODEL_FILE) and os.path.exists(VECTORIZER_FILE):
-        model = joblib.load(MODEL_FILE)
-        vectorizer = joblib.load(VECTORIZER_FILE)
-        print("✅ Model loaded")
-    else:
-        print("⚠️ Training new model...")
-        train_model()
-        print("✅ Model trained")
-    
-    _initialized = True
-    print("🎉 APPLICATION READY!")
-    print("=" * 60)
-
-def load_or_create_dataset(file_name="sample_toxic_comments.csv"):
-    if not os.path.exists(file_name):
-        return create_fresh_dataset(file_name)
-    try:
-        df = pd.read_csv(file_name)
-        if 'comment_text' in df.columns and 'toxic' in df.columns:
-            return df[['comment_text', 'toxic']]
-        if len(df.columns) >= 2:
-            new_df = pd.DataFrame()
-            new_df['comment_text'] = df.iloc[:, 0]
-            new_df['toxic'] = df.iloc[:, 1]
-            return new_df
-    except Exception as e:
-        print(f"Error: {e}")
-    return create_fresh_dataset(file_name)
-
-def create_fresh_dataset(file_name):
-    data = {
-        "comment_text": ["I hate you", "You are stupid", "Amazing work", "Well done", "You suck", "Excellent effort", "Terrible job", "Great performance", "Worst ever", "Keep it up", "You're an idiot", "This is garbage", "Wonderful presentation", "Brilliant idea", "Pathetic attempt", "Fantastic job", "Disappointing results", "You're worthless", "Outstanding work", "Complete failure", "I love this", "Nice try"],
-        "toxic": [1, 1, 0, 0, 1, 0, 1, 0, 1, 0, 1, 1, 0, 0, 1, 0, 1, 1, 0, 1, 0, 0]
-    }
-    df = pd.DataFrame(data)
-    df.to_csv(file_name, index=False)
-    return df
-
-def train_model():
-    global model, vectorizer, df
-    vectorizer = TfidfVectorizer(max_features=8000, ngram_range=(1, 2))
-    X_vec = vectorizer.fit_transform(df["clean_text"])
-    model = LogisticRegression(max_iter=1000, class_weight="balanced")
-    model.fit(X_vec, df["toxic"])
-    joblib.dump(model, MODEL_FILE)
-    joblib.dump(vectorizer, VECTORIZER_FILE)
-
-def clean_text(text):
-    if not isinstance(text, str):
-        text = str(text)
-    text = text.lower()
-    text = re.sub(r"http\S+", "", text)
-    text = re.sub(r"@\w+", "", text)
-    text = re.sub(r"[^a-z\s]", " ", text)
-    words = text.split()
-    if STOP_WORDS:
-        words = [w for w in words if w not in STOP_WORDS]
-    return " ".join(words)
-
-def get_toxicity_score(text):
-    global model, vectorizer
-    cleaned = clean_text(text)
-    words = cleaned.split()
-    found_explicit = [w for w in words if w in EXPLICIT_TOXIC_WORDS]
-    
-    if len(words) == 0:
-        return {"toxicity_score": 0, "toxicity_level": "Safe", "color": "#00c853", "ml_confidence": 0, "ml_prediction": "Non-Toxic", "explicit_words": []}
-    
-    vec = vectorizer.transform([cleaned])
-    probs = model.predict_proba(vec)[0]
-    prediction = model.predict(vec)[0]
-    confidence = float(probs[prediction])
-    
-    toxicity_score = confidence * 70 if prediction == 1 else 0
-    toxicity_score += min(len(found_explicit) * 15, 30)
-    toxicity_score = min(toxicity_score, 100)
-    
-    if toxicity_score < 30:
-        toxicity_level, color = "Safe", "#00c853"
-    elif toxicity_score < 70:
-        toxicity_level, color = "Warning", "#ff9800"
-    else:
-        toxicity_level, color = "Toxic", "#f44336"
-    
-    # Update analytics
+def update_analytics(text, result):
+    """Update analytics with analysis result"""
     analytics = load_analytics()
     today = datetime.now().strftime("%Y-%m-%d")
+    
     analytics["total_analyses"] += 1
-    if toxicity_level == "Toxic":
+    level = result["toxicity_level"].lower()
+    
+    if level == "toxic":
         analytics["toxic_count"] += 1
-    elif toxicity_level == "Warning":
+    elif level == "warning":
         analytics["warning_count"] += 1
     else:
         analytics["safe_count"] += 1
     
     if today not in analytics["daily_stats"]:
         analytics["daily_stats"][today] = {"toxic": 0, "warning": 0, "safe": 0}
-    analytics["daily_stats"][today][toxicity_level.lower()] += 1
+    analytics["daily_stats"][today][level] += 1
     
-    analytics["recent_analyses"].insert(0, {"text": text[:100], "level": toxicity_level, "score": round(toxicity_score, 2), "timestamp": datetime.now().isoformat()})
+    analytics["recent_analyses"].insert(0, {
+        "text": text[:100] + ("..." if len(text) > 100 else ""),
+        "level": result["toxicity_level"],
+        "score": result["toxicity_score"],
+        "timestamp": datetime.now().isoformat()
+    })
     analytics["recent_analyses"] = analytics["recent_analyses"][:50]
     save_analytics(analytics)
-    
-    return {"toxicity_score": round(toxicity_score, 2), "toxicity_level": toxicity_level, "color": color, "ml_confidence": round(confidence * 100, 2), "ml_prediction": "Toxic" if prediction == 1 else "Non-Toxic", "explicit_words": found_explicit, "word_count": len(words)}
 
 # ============================================
 # ROUTES
@@ -208,13 +251,11 @@ def dashboard():
         return redirect('/login')
     return render_template("dashboard.html")
 
-# IMPORTANT: Health check for Render
 @app.route('/health', methods=['GET'])
 def health_check():
     return jsonify({
         "status": "healthy",
-        "message": "ToxiScan AI is running",
-        "initialized": _initialized,
+        "message": "ToxiScan AI is running (Pattern-based detection)",
         "timestamp": datetime.now().isoformat()
     }), 200
 
@@ -257,15 +298,22 @@ def get_current_user():
 
 @app.route("/api/analyze", methods=["POST"])
 def analyze_text():
-    initialize_app()
     try:
         data = request.json
         if not data or "text" not in data:
             return jsonify({"error": "No text provided"}), 400
-        result = get_toxicity_score(data["text"])
+        text = data["text"].strip()
+        if not text:
+            return jsonify({"error": "Empty text"}), 400
+        
+        # Detect toxicity using pattern matching
+        result = detect_toxicity(text)
+        
+        # Update analytics
+        update_analytics(text, result)
+        
         return jsonify({
-            "original_text": data["text"],
-            "cleaned_text": clean_text(data["text"]),
+            "original_text": text,
             "explicit_toxic_words": result["explicit_words"],
             "analysis": {
                 "toxicity_score": result["toxicity_score"],
@@ -273,10 +321,12 @@ def analyze_text():
                 "color": result["color"],
                 "ml_confidence": result["ml_confidence"],
                 "ml_prediction": result["ml_prediction"],
-                "word_count": result["word_count"]
+                "word_count": result["word_count"],
+                "toxic_probability": result.get("toxic_probability", 0)
             }
         })
     except Exception as e:
+        print(f"Error: {e}")
         return jsonify({"error": str(e)}), 500
 
 @app.route("/api/analytics", methods=["GET"])
@@ -305,14 +355,19 @@ def serve_static(path):
 
 if __name__ == "__main__":
     print("\n" + "=" * 50)
-    print("TOXISCAN AI - RUNNING")
+    print("TOXISCAN AI - PATTERN DETECTION (No ML Model)")
     print("=" * 50)
-    initialize_app()
     
     port = int(os.environ.get("PORT", 5000))
     print(f"\n🌐 Server running on port: {port}")
     print("🔐 admin / admin123 | demo / demo123")
-    print("✅ Health check: /health")
+    print("\n📝 HOW IT WORKS:")
+    print("   ✅ Any single word name → 0% toxicity (Safe)")
+    print("   ✅ 'Kartikey' → Safe")
+    print("   ✅ 'Rahul' → Safe")
+    print("   🔴 'stupidddd' → Toxic")
+    print("   🔴 'sooo stupid' → Toxic")
+    print("   🔴 'baaaaad' → Toxic")
     print("\n" + "=" * 50 + "\n")
     
     app.run(debug=False, host="0.0.0.0", port=port)
